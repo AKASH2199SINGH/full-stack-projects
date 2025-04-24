@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neon Weather App</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- 🌗 Dark Mode Toggle -->
+    <div class="theme-toggle">
+      <label>
+        <input type="checkbox" id="theme-switch" />
+        <span class="slider"></span>
+      </label>
+      <span>🌗</span>
+    </div>
+
+    <!-- 🌤 Main Container -->
+    <div class="container">
+      <h1>Weather Forecast</h1>
+
+      <form id="weather-form">
+        <input
+          type="text"
+          id="city-input"
+          placeholder="Enter city name"
+          required
+        />
+        <button type="submit">Search</button>
+      </form>
+
+      <div id="weather-result" class="hidden">
+        <h2 id="city-name">City</h2>
+        <img id="weather-icon" src="" alt="Weather Icon" />
+        <p><strong>Temp:</strong> <span id="temp"></span></p>
+        <p><strong>Feels Like:</strong> <span id="feels-like"></span></p>
+        <p><strong>Humidity:</strong> <span id="humidity"></span></p>
+        <p><strong>Description:</strong> <span id="description"></span></p>
+      </div>
+    </div>
+
+    <!-- 🔌 Script -->
+    <script>
+      const form = document.getElementById("weather-form");
+      const cityInput = document.getElementById("city-input");
+      const resultDiv = document.getElementById("weather-result");
+      const themeSwitch = document.getElementById("theme-switch");
+      const body = document.body;
+
+      themeSwitch.addEventListener("change", () => {
+        body.classList.toggle("dark-mode");
+      });
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const city = cityInput.value.trim();
+        if (!city) return alert("Please enter a city name");
+
+        try {
+          const res = await fetch(`/weather?city=${city}`);
+          const data = await res.json();
+
+          if (data.error) {
+            alert("Error: " + data.error);
+            return;
+          }
+
+          document.getElementById("city-name").textContent = data.city;
+          document.getElementById("temp").textContent = data.temp;
+          document.getElementById("feels-like").textContent = data.feels_like;
+          document.getElementById("humidity").textContent = data.humidity;
+          document.getElementById("description").textContent = data.description;
+          document.getElementById("weather-icon").src = data.icon;
+
+          body.style.backgroundImage = getBackgroundForCondition(
+            data.description
+          );
+          resultDiv.classList.remove("hidden");
+        } catch (err) {
+          alert("Failed to fetch weather data.");
+        }
+      });
+
+      function getBackgroundForCondition(desc) {
+        desc = desc.toLowerCase();
+        if (desc.includes("cloud"))
+          return "url('https://media.istockphoto.com/id/476866850/photo/blue-sky-and-clouds-background.webp?s=2048x2048&w=is&k=20&c=J6Zt4E1oJoGZiVixCRXkcru2dtUvf2SiPb4Q5n3m9pQ=')";
+        if (desc.includes("clear"))
+          return "url('https://media.istockphoto.com/id/824800468/photo/sun-on-blue-sky-with-clouds.jpg?s=1024x1024&w=is&k=20&c=WNVtjesCDPxByjPSgUZetllcBsOqvJpohuOIf9pqVWU=')";
+        if (desc.includes("rain"))
+          return "url('https://media.istockphoto.com/id/471686822/vector/cartoon-man-holding-a-red-umbrella-in-a-rain-storm.webp?s=2048x2048&w=is&k=20&c=I-e72fTDkKLzmqy78QPjkqAVAvc8fO4ZZMzUKnXLdZo=')";
+        if (desc.includes("snow"))
+          return "url('https://media.istockphoto.com/id/1436054627/vector/natural-winter-christmas-background-with-sky-heavy-snowfall-vector-snowy-landscape-with.webp?s=2048x2048&w=is&k=20&c=Qkh3MVGQ0O33TGnb7oOL0UMwymWtkpj26aHtNqRjxnk=')";
+        return "linear-gradient(135deg, #5ee7df 0%, #b490ca 100%)";
+      }
+    </script>
+  </body>
+</html>

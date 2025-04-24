@@ -1,0 +1,17 @@
+{
+    "name": "weather-app",
+    "version": "1.0.0",
+    "description": "Simple weather app using Node.js, Express, HTML, and CSS",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "axios": "^1.8.4",
+        "express": "^4.21.2",
+        "node-fetch": "^2.6.7"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}
